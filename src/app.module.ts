@@ -1,12 +1,17 @@
+// app.module.ts
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { RedisService } from './redis/redis.service';
-import { RateLimiterService } from './rate-limiter/rate-limiter.service';
+import { RateLimiterModule } from './rate-limiter/rate-limiter.module';
+import { ConfigModule } from '@nestjs/config';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService, RedisService, RateLimiterService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true, // Make config globally available
+      envFilePath: '.env', // Specify the path to your .env file (optional)
+    }),
+    RedisModule,
+    RateLimiterModule,
+  ],
 })
 export class AppModule {}
