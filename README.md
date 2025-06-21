@@ -1,6 +1,6 @@
 # **ReqLimiter** 🚫
 <p align="center">
-  <img src="./assets/flowchart.jpeg" alt="Architecture Flowchart" width="600"/>
+  <img src="https://github.com/Amey1619/ReqLimiter/blob/main/assets/flowchart.jpeg" alt="Architecture Flowchart" width="600"/>
 </p>
 A lightweight and customizable **rate limiting utility** built using **Redis**, **Lua**, and designed with **NestJS-style service architecture** — yet usable in any Node.js or JavaScript application.
 

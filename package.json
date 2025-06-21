@@ -1,6 +1,6 @@
 {
   "name": "reqlimiter",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A reusable sliding window rate limiter using Redis and Lua, compatible with any Node.js or NestJS project.",
   "author": "Amey Gupta",
   "license": "ISC",
