@@ -1,0 +1,21 @@
+# .npmignore
+# Ignore development sources
+src/
+test/
+*.spec.*
+*.ts
+*.js.map
+
+# TypeScript configs
+tsconfig.json
+tsconfig.*.tsbuildinfo
+
+# Config and dev files
+jest.*
+.eslintrc.js
+README.test.md
+
+# Do NOT ignore the Lua scripts
+!lua/
+
+

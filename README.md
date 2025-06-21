@@ -1,98 +1,142 @@
+# **ReqLimiter** 🚫
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <img src="./assets/flowchart.jpeg" alt="Architecture Flowchart" width="600"/>
 </p>
+A lightweight and customizable **rate limiting utility** built using **Redis**, **Lua**, and designed with **NestJS-style service architecture** — yet usable in any Node.js or JavaScript application.
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+---
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Introduction
 
-## Description
+`reqlimiter` is designed for modern backend systems that need reliable request limiting without bloating the codebase. It combines:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Redis** for fast in-memory request tracking and atomic operations.
+- **Lua** for performance-optimized scripts executed directly inside Redis.
+- **NestJS-style service** design for better modularity and testability — even if you’re not using NestJS.
 
-## Project setup
+---
 
-```bash
-$ npm install
-```
+## 🔁 Sliding Window Algorithm
 
-## Compile and run the project
+This library uses the **Sliding Window Log** algorithm, a more accurate and fair approach than fixed or leaky bucket strategies.
 
-```bash
-# development
-$ npm run start
+### ✅ Benefits:
 
-# watch mode
-$ npm run start:dev
+- Smooth rate limiting without burst traffic spikes.
+- Time-accurate tracking using Redis sorted logs.
+- Dynamically trims old entries.
 
-# production mode
-$ npm run start:prod
-```
+---
 
-## Run tests
+## 🧩 Lua Script for Atomicity
 
-```bash
-# unit tests
-$ npm run test
+All rate limiting logic is powered by a Redis-side **Lua script**, which:
 
-# e2e tests
-$ npm run test:e2e
+- Atomically tracks timestamps.
+- Prunes expired entries.
+- Computes remaining quota.
+- Prevents race conditions in high-concurrency environments.
 
-# test coverage
-$ npm run test:cov
-```
+### ✅ Benefits of Lua:
 
-## Deployment
+- Executes atomically in Redis (no race conditions).
+- Reduces client-server round trips.
+- Scales well with concurrent traffic.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 💡 Features
+
+- ✅ **Custom Window Size** (e.g. 60 seconds)
+- ✅ **Configurable Request Limit**
+- ✅ **Automatic Abuse Detection**
+- ✅ **Temporary IP Bans**
+- ✅ **Lua-optimized Performance**
+- ✅ **Zero NestJS dependency** in usage
+- ✅ **Works in any Node.js or JS project**
+
+---
+
+## 📦 Installation
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm install reqlimiter 
+```
+---
+
+## 📦 Dependencies
+
+- Requires **Node.js**
+- Requires **Redis** instance (local or cloud-hosted)
+- Requires [`ioredis`](https://www.npmjs.com/package/ioredis) **version `^5.6.1`**
+
+---
+
+## **Usage**
+
+To apply rate-limiting to your application using `reqlimiter`
+
+🔗 Step 1: Connect to Redis
+
+Use `ioredis` to establish a connection with your Redis instance (local or cloud-hosted):
+
+```Javascript
+const Redis = require("ioredis");
+const { rateLimit } = require("reqlimiter");
+
+// Connect to Redis (local or cloud)
+const redis = new Redis("redis://localhost:6379");
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+⚙️ Step-2 Then configure according to your connection
 
-## Resources
+Create a rateLimiter instance by passing your Redis client and desired configuration options:
 
-Check out a few resources that may come in handy when working with NestJS:
+```Javascript 
+// Create rate limiter instance
+const rateLimiter = rateLimit({
+  redisClient: redis,
+  config: {
+    windowSize: 60,    // Duration of the time window in seconds
+    maxRequests: 5,    // Max requests allowed within the window
+  },
+});
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+🧱 Step 3: Apply Rate Limiting Middleware
 
-## Support
+```Javascript
+// Middleware
+const rateLimiterMiddleware = async (req, res, next) => {
+  try {
+    const key = req.ip; // or use req.headers['x-api-key'] etc. for token-based limits
+    const { allowed } = await rateLimiter.check(key); // use .check method to validate
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+    if (!allowed) {
+      return res.status(429).json({ message: "Too many requests" });
+    }
 
-## Stay in touch
+    next(); // Allow request if not rate-limited
+  } catch (err) {
+    console.error("Rate Limiter Error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+```
+🛠️ Advanced Configuration (Optional)
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+You can pass additional options to tune rate limiting:
 
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```Javascript
+const rateLimiter = rateLimit({
+  redisClient: redis,
+  config: {
+    windowSize: 60,         // Time window in seconds
+    maxRequests: 10,        // Allowed requests in that window
+    banDuration: 3600,      // Seconds to ban a user after abuse
+    abuseThreshold: 5,      // # of times allowed to exceed before ban
+    abuseWindow: 120,       // Time period to track abuse attempts
+  },
+});
+```
+Created by **@Ameygupta**
